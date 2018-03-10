@@ -7,11 +7,14 @@ import progressbar
 
 
 # Stuff for graphing
+from bokeh.io import curdoc
+from bokeh.layouts import row, column
 from bokeh.plotting import figure, show, output_file
 from bokeh.models import (
     ColumnDataSource,
+    TapTool,
     HoverTool,
-    LogColorMapper
+    CustomJS,
 )
 from subprocess import call
 import os
@@ -60,7 +63,7 @@ if token:
         # print(json.dumps(individual_feature[0]))
 
         # Store info about the features in the lists to later graph
-        dance.append(individu        al_feature[0]['danceability'])
+        dance.append(individual_feature[0]['danceability'])
         loudness.append(individual_feature[0]['loudness'])
         names.append(track['name'])
 
@@ -87,7 +90,7 @@ if token:
     ## Yeah, lets do some fucking gRAPHING DUDE
 
     # Set up the tools the website will show
-    TOOLS = "pan,wheel_zoom,reset,hover,save"
+    TOOLS = "pan,wheel_zoom,box_select,reset,hover,save"
 
     # Colors
     colormap = {'setosa': 'red', 'versicolor': 'green', 'virginica': 'blue'}
@@ -119,12 +122,36 @@ if token:
         ("Name", "@name")
     ]
 
-    # Load it!
-    output_file("music.html", title="Music analysis example")
-    show(p)
+    # source.callback = CustomJS(args=dict(source=source), code="""
+    #     var inds = cb_obj.get('selected')['1d'].indices;
+    #     var d1 = cb_obj.get('data');
+    #     var d2 = s2.get('data');
+    #     d2['x'] = []
+    #     d2['y'] = []
+    #     for (i = 0; i < inds.length; i++) {
+    #         d2['x'].push(d1['x'][inds[i]])
+    #         d2['y'].push(d1['y'][inds[i]])
+    #     }
+    #     s2.trigger('change');
+    # """)
 
+    # stats = PreText(text='', width=500)
+
+    # Load it!
+
+
+    # Or display it if that's what you're doing
+    # output_file("music.html", title="Music analysis example")
+    # show(p)
+
+
+    # dump it
+    curdoc().add_root(p)
+    curdoc().title = "Spotify Stuff"
 
 else:
     #Whomp, auth failed
     print ("Can't get token for", username)
 
+def PrintSelection():
+    print
